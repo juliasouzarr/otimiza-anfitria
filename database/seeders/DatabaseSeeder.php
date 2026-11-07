@@ -15,11 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Administradora',
-            'email' => 'admin@otimizaanfitria.com',
-            'password' => bcrypt('Leona2107$'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@otimizaanfitria.com'],
+            [
+                'name' => 'Administradora',
+                'password' => bcrypt('Leona2107$'),
+            ]
+        );
 
         $this->call([
             ProductSeeder::class,
