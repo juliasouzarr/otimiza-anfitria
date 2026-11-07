@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Barra de rolagem fina e azul escuro (Chrome, Edge, Safari, Opera) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #135161;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0d3844;
+}
+
+/* Suporte para Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #135161 #f1f5f9;
+}
