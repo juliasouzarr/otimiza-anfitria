@@ -335,11 +335,58 @@
             color: var(--brand-dark);
         }
 
-        /* Totais */
+        /* Totais e Condições de Pagamento */
+        .totals-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .payment-policy-box {
+            flex: 1;
+            background: #f0fdf4;
+            border: 1.5px solid #22c55e;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .policy-header {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #15803d;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .policy-text {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #14532d;
+            line-height: 1.4;
+        }
+
+        .policy-sub {
+            font-size: 11.5px;
+            color: #166534;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(34, 197, 94, 0.4);
+            font-weight: 600;
+        }
+
         .totals-container {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 24px;
+            margin-bottom: 0;
         }
 
         .totals-box {
@@ -497,12 +544,6 @@
                 Voltar aos Detalhes
             </a>
         </div>
-        <div class="tip-text">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Para gerar arquivo PDF, selecione <strong>"Salvar como PDF"</strong> no destino da impressora.
-        </div>
     </div>
 
     <!-- FOLHA A4 PRINCIPAL -->
@@ -515,13 +556,12 @@
                     <img src="{{ asset('images/logocolorida.png') }}" alt="Otimiza Anfitriã" class="header-logo">
                     <div class="header-brand-info">
                         <h1>Otimiza Anfitriã</h1>
-                        <p>Gestão Inteligente de Enxovais & Hospedagens</p>
+                        <p>Locação de Enxovais para Hospedagens</p>
                     </div>
                 </div>
-                <div class="header-doc">
-                    <div class="doc-badge">Comprovante de Reserva</div>
+                <div class="header-doc">                   
                     <div class="doc-title">PEDIDO #{{ str_pad($reservation->id, 4, '0', STR_PAD_LEFT) }}</div>
-                    <div class="doc-meta">Emissão: {{ now()->format('d/m/Y \à\s H:i') }}</div>
+                    <div class="doc-meta">Emissão: {{ \Carbon\Carbon::now('America/Sao_Paulo')->format('d/m/Y \à\s H:i') }}</div>
                 </div>
             </div>
 
@@ -543,11 +583,11 @@
                         <span class="info-label">Status do Pedido:</span>
                         <span class="info-value">
                             @if($reservation->status == 'active')
-                                <span class="status-badge status-active">Ativo</span>
+                                <span>Ativo</span>
                             @elseif($reservation->status == 'completed')
-                                <span class="status-badge status-completed">Encerrado</span>
+                                <span>Encerrado</span>
                             @else
-                                <span class="status-badge status-cancelled">Cancelado</span>
+                                <span>Cancelado</span>
                             @endif
                         </span>
                     </div>
@@ -635,7 +675,7 @@
             </table>
 
             <!-- QUADRO DE TOTAIS -->
-            <div class="totals-container">
+            <div class="totals-container">                
                 <div class="totals-box">
                     <div class="totals-row">
                         <span class="info-label">Total de Itens / Peças:</span>
@@ -664,7 +704,7 @@
         <!-- TERMO DE RECEBIMENTO E ASSINATURAS -->
         <div class="terms-block">
             <p class="terms-text">
-                Declaro ter conferido e recebido todos os enxovais e peças acima relacionados em perfeito estado de conservação, higienização e embalagem. Comprometo-me a zelar pela integridade dos itens e devolvê-los no prazo acordado ({{ \Carbon\Carbon::parse($reservation->end_date)->format('d/m/Y') }}).
+                <strong>Condição de Reserva e Recebimento:</strong> Para a reserva, solicitamos o pagamento de sinal de 50% do valor do pedido. <br><br> Declaro ter conferido e recebido todos os enxovais e peças acima relacionados em perfeito estado de conservação, higienização e embalagem. Comprometo-me a zelar pela integridade dos itens e devolvê-los no prazo acordado ({{ \Carbon\Carbon::parse($reservation->end_date)->format('d/m/Y') }}).
             </p>
 
             <div class="signatures-grid">
@@ -676,14 +716,14 @@
                 <div class="signature-box">
                     <div class="signature-line"></div>
                     <div class="signature-name">Otimiza Anfitriã</div>
-                    <div class="signature-role">Responsável pela Entrega / Conferência</div>
+                    <div class="signature-role">Responsável pela Conferência</div>
                 </div>
             </div>
 
             <!-- RODAPÉ -->
             <div class="footer">
-                <span>Otimiza Anfitriã • Gestão de Enxovais</span>
-                <span>Documento emitido eletronicamente em {{ now()->format('d/m/Y \à\s H:i:s') }}</span>
+                <span>Otimiza Anfitriã • Locação de Enxovais</span>
+                <span>Documento emitido eletronicamente em {{ \Carbon\Carbon::now('America/Sao_Paulo')->format('d/m/Y \à\s H:i:s') }}</span>
                 <span>Página 1 de 1</span>
             </div>
         </div>
@@ -692,3 +732,4 @@
 
 </body>
 </html>
+
