@@ -97,6 +97,10 @@
                                     @endif
                                 </td>
                                 <td class="px-5 py-4 text-sm text-right space-x-3">
+                                    <a href="{{ route('reservations.print', $reservation) }}" target="_blank" class="inline-flex items-center gap-1 text-slate-600 hover:text-brand font-semibold transition-colors" title="Imprimir Pedido (PDF)">
+                                        <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24-1.033-.42-2.12-.42-3.329 0-4.418 3.582-8 8-8s8 3.582 8 8c0 1.21-.18 2.296-.42 3.329M6 18h12M8 14h8m-10 7h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2z"/></svg>
+                                        <span>Imprimir</span>
+                                    </a>
                                     <a href="{{ route('reservations.show', $reservation) }}" class="text-gray-500 hover:text-brand-dark font-semibold transition-colors">Detalhes</a>
                                     
                                     @if($reservation->status == 'active')

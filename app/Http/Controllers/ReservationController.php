@@ -102,6 +102,12 @@ class ReservationController extends Controller
         return view('reservations.show', compact('reservation'));
     }
 
+    public function print(Reservation $reservation)
+    {
+        $reservation->load('items.product');
+        return view('reservations.print', compact('reservation'));
+    }
+
     public function edit(Reservation $reservation)
     {
         $reservation->load('items.product');

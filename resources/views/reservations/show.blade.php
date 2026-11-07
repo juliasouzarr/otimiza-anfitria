@@ -1,10 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-brand-secondary leading-tight">
-                {{ __('Detalhes da Reserva #') }}{{ $reservation->id }}
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="font-semibold text-2xl text-brand-dark leading-tight tracking-tight">
+                {{ __('Pedido / Reserva #') }}{{ $reservation->id }}
             </h2>
-            <a href="{{ route('reservations.index') }}" class="text-gray-500 hover:text-gray-700">Voltar</a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('reservations.print', $reservation) }}" target="_blank" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-secondary text-white font-bold py-2.5 px-5 rounded-full shadow-md hover:shadow-lg transition-transform hover:scale-105">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24-1.033-.42-2.12-.42-3.329 0-4.418 3.582-8 8-8s8 3.582 8 8c0 1.21-.18 2.296-.42 3.329M6 18h12M8 14h8m-10 7h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2z"/></svg>
+                    Imprimir Pedido (PDF)
+                </a>
+                <a href="{{ route('reservations.index') }}" class="text-sm font-semibold text-slate-500 hover:text-brand-dark py-2 px-3 rounded-xl hover:bg-slate-100 transition-colors">Voltar</a>
+            </div>
         </div>
     </x-slot>
 
@@ -31,13 +37,17 @@
                             <p class="mt-2"><strong>Observações:</strong><br/> {{ $reservation->notes }}</p>
                         @endif
                     </div>
-                    @if($reservation->status == 'active')
-                    <div>
-                        <a href="{{ route('reservations.edit', $reservation) }}" class="bg-brand hover:bg-brand-secondary text-white font-bold py-2 px-4 rounded shadow">
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <a href="{{ route('reservations.print', $reservation) }}" target="_blank" class="inline-flex items-center gap-2 border border-brand text-brand hover:bg-brand hover:text-white font-bold py-2 px-4 rounded-xl shadow-sm transition-all text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24-1.033-.42-2.12-.42-3.329 0-4.418 3.582-8 8-8s8 3.582 8 8c0 1.21-.18 2.296-.42 3.329M6 18h12M8 14h8m-10 7h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2z"/></svg>
+                            Imprimir A4 (PDF)
+                        </a>
+                        @if($reservation->status == 'active')
+                        <a href="{{ route('reservations.edit', $reservation) }}" class="bg-brand hover:bg-brand-secondary text-white font-bold py-2 px-4 rounded-xl shadow-sm transition-all text-sm">
                             Editar Reserva
                         </a>
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
 

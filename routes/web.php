@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     
     Route::resource('products', ProductController::class);
     Route::resource('kits', KitController::class);
+    Route::get('/reservations/{reservation}/print', [ReservationController::class, 'print'])->name('reservations.print');
     Route::resource('reservations', ReservationController::class);
 });
 
