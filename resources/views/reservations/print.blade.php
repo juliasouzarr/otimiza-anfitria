@@ -690,15 +690,7 @@
                         <span class="grand-total-value">R$ {{ number_format($reservation->total_price ?? 0, 2, ',', '.') }}</span>
                     </div>
                 </div>
-            </div>
-
-            <!-- OBSERVAÇÕES (se houver) -->
-            @if($reservation->notes)
-            <div class="notes-card">
-                <strong>Observações Importantes:</strong>
-                {{ $reservation->notes }}
-            </div>
-            @endif
+            </div>                   
         </div>
 
         <!-- TERMO DE RECEBIMENTO E ASSINATURAS -->
