@@ -53,17 +53,17 @@
 
                         <!-- SEÇÃO: ADICIONAR POR KIT -->
                         @if($kits->isNotEmpty())
-                        <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-brand/10 to-brand-accent/20 border border-brand/20">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                <div>
+                        <div class="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-brand/10 via-brand-accent/15 to-brand/10 border border-brand/20">
+                            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-4">
+                                <div class="min-w-0">
                                     <h4 class="font-bold text-brand-dark text-sm flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                                        Adicionar por Kit de Enxoval
+                                        <svg class="w-4 h-4 text-brand shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                                        <span>Adicionar por Kit de Enxoval</span>
                                     </h4>
-                                    <p class="text-xs text-slate-600">Insere automaticamente todos os itens e quantidades do kit no pedido.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Preenche os itens automaticamente no pedido.</p>
                                 </div>
-                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
-                                    <select x-model="selectedKitId" class="border-brand/30 focus:border-brand focus:ring-brand rounded-xl text-sm py-2 px-3 bg-white flex-1 sm:w-auto">
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+                                    <select x-model="selectedKitId" class="border-brand/30 focus:border-brand focus:ring-brand rounded-xl text-xs sm:text-sm py-2 px-3 bg-white w-full sm:w-56 md:w-64 shadow-xs">
                                         <option value="">Selecione um Kit...</option>
                                         @foreach($kits as $k)
                                             <option value="{{ $k->id }}">
@@ -71,11 +71,11 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <div class="flex items-center gap-1.5 shrink-0 bg-white px-2.5 py-1 rounded-xl border border-brand/30 shadow-sm" title="Quantidade de kits a adicionar">
+                                    <div class="flex items-center justify-center gap-1.5 shrink-0 bg-white px-2.5 py-1.5 rounded-xl border border-brand/30 shadow-xs">
                                         <span class="text-xs font-bold text-slate-500">Qtd:</span>
-                                        <input type="number" x-model.number="kitQuantity" min="1" max="99" class="w-14 text-center border-0 focus:ring-0 p-0 text-sm font-bold text-brand-dark">
+                                        <input type="number" x-model.number="kitQuantity" min="1" max="99" class="w-10 text-center border-0 focus:ring-0 p-0 text-sm font-bold text-brand-dark">
                                     </div>
-                                    <button type="button" @click="addKit()" class="bg-brand hover:bg-brand-secondary text-white font-bold text-xs py-2 px-4 rounded-xl shadow-sm transition-all shrink-0">
+                                    <button type="button" @click="addKit()" class="bg-brand hover:bg-brand-secondary text-white font-bold text-xs py-2 px-4 rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap text-center">
                                         + Inserir Kit
                                     </button>
                                 </div>
@@ -173,6 +173,117 @@
                             </div>
                         </div>
 
+                        <!-- SEÇÃO: STATUS DE PAGAMENTO -->
+                        <div class="mb-6 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                            <div class="mb-3">
+                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Status do Pagamento</h3>
+                                <p class="text-xs text-slate-500">Informe a situação do pagamento desta reserva.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                                <label class="cursor-pointer border-2 rounded-xl p-3 flex flex-col justify-between transition-all"
+                                       :class="payment_status === 'pending' ? 'border-amber-400 bg-amber-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <input type="radio" name="payment_status" value="pending" x-model="payment_status" @change="onPaymentStatusChange()" class="text-amber-600 focus:ring-amber-500">
+                                        <span class="text-xs font-bold text-slate-700">Pendente</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500">Nenhum valor pago</p>
+                                </label>
+
+                                <label class="cursor-pointer border-2 rounded-xl p-3 flex flex-col justify-between transition-all"
+                                       :class="payment_status === 'signal' ? 'border-sky-500 bg-sky-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <input type="radio" name="payment_status" value="signal" x-model="payment_status" @change="onPaymentStatusChange()" class="text-sky-600 focus:ring-sky-500">
+                                        <span class="text-xs font-bold text-slate-700">Sinal Pago (50%)</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500">50% do valor do pedido</p>
+                                </label>
+
+                                <label class="cursor-pointer border-2 rounded-xl p-3 flex flex-col justify-between transition-all"
+                                       :class="payment_status === 'paid' ? 'border-emerald-500 bg-emerald-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <input type="radio" name="payment_status" value="paid" x-model="payment_status" @change="onPaymentStatusChange()" class="text-emerald-600 focus:ring-emerald-500">
+                                        <span class="text-xs font-bold text-slate-700">Totalmente Pago</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500">100% quitado</p>
+                                </label>
+
+                                <label class="cursor-pointer border-2 rounded-xl p-3 flex flex-col justify-between transition-all"
+                                       :class="payment_status === 'other' ? 'border-indigo-500 bg-indigo-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <input type="radio" name="payment_status" value="other" x-model="payment_status" @change="onPaymentStatusChange()" class="text-indigo-600 focus:ring-indigo-500">
+                                        <span class="text-xs font-bold text-slate-700">Outro Valor</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500">Digitar valor específico</p>
+                                </label>
+                            </div>
+
+                            <!-- Campo customizado para 'Outro Valor' -->
+                            <div x-show="payment_status === 'other'" x-transition class="mb-4 p-4 bg-white rounded-xl border border-indigo-200 shadow-sm">
+                                <label class="block text-slate-700 text-xs font-bold mb-1.5" for="paid_amount">
+                                    Valor Pago pelo Cliente (R$) *
+                                </label>
+                                <div class="relative max-w-xs">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-sm text-slate-400 font-bold pointer-events-none">R$</span>
+                                    <input type="number" step="0.01" min="0" name="paid_amount" id="paid_amount"
+                                           x-model.number="paid_amount"
+                                           placeholder="0.00"
+                                           class="border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm w-full py-2 pl-9 pr-3 text-sm font-semibold">
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-1">Informe exatamente a quantia em R$ já recebida.</p>
+                            </div>
+
+                            <!-- Campo: Data do Pagamento (Opcional) -->
+                            <div x-show="payment_status !== 'pending'" x-transition class="mb-4 p-4 sm:p-5 bg-white rounded-2xl border border-slate-200 shadow-xs">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                    <div class="flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        <label class="block text-slate-800 text-xs font-bold uppercase tracking-wider" for="payment_date">
+                                            Data do Pagamento
+                                        </label>
+                                        <span class="text-[10px] text-slate-400 font-medium px-2 py-0.5 bg-slate-100 rounded-full">Opcional</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" @click="payment_date = '{{ now()->toDateString() }}'" 
+                                                class="text-xs font-semibold text-brand hover:text-brand-secondary bg-slate-50 hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition-colors">
+                                            Hoje
+                                        </button>
+                                        <button type="button" @click="payment_date = ''" 
+                                                class="text-xs font-semibold text-rose-600 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 shadow-2xs transition-colors">
+                                            Deixar sem data
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="relative max-w-xs">
+                                    <input type="date" name="payment_date" id="payment_date"
+                                           x-model="payment_date"
+                                           class="border-slate-300 focus:border-brand-secondary focus:ring-brand-secondary rounded-xl shadow-xs w-full py-2.5 px-3.5 text-sm font-medium text-slate-800">
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-2 flex items-center gap-1.5">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    <span>Para deixar sem data, clique no botão <strong>Deixar sem data</strong> ou apague o campo.</span>
+                                </p>
+                            </div>
+
+                            <!-- Resumo dos Valores de Pagamento -->
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center sm:text-left">
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold text-slate-400 block">Total do Pedido</span>
+                                    <span class="text-base font-black text-slate-800">R$ <span x-text="formatCurrency(totalOrder())"></span></span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold text-emerald-600 block">Valor Pago</span>
+                                    <span class="text-base font-black text-emerald-700">R$ <span x-text="formatCurrency(calculatedPaidAmount())"></span></span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold text-slate-400 block">Restante a Pagar</span>
+                                    <span class="text-base font-black" :class="remainingAmount() > 0 ? 'text-amber-600' : 'text-slate-500'">
+                                        R$ <span x-text="formatCurrency(remainingAmount())"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Observações -->
                         <div class="mb-6">
                             <label class="block text-slate-700 text-sm font-bold mb-2" for="notes">Observações</label>
@@ -222,6 +333,32 @@
                 selectedKitId: '',
                 kitQuantity: 1,
                 items: initialItems,
+                payment_status: '{{ old('payment_status', 'pending') }}',
+                paid_amount: {{ old('paid_amount', 0) }},
+                payment_date: '{{ old('payment_date', '') }}',
+
+                onPaymentStatusChange() {
+                    if (this.payment_status === 'signal') {
+                        this.paid_amount = Math.round(this.totalOrder() * 50) / 100;
+                    } else if (this.payment_status === 'paid') {
+                        this.paid_amount = this.totalOrder();
+                    } else if (this.payment_status === 'pending') {
+                        this.paid_amount = 0;
+                        this.payment_date = '';
+                    }
+                },
+
+                calculatedPaidAmount() {
+                    if (this.payment_status === 'pending') return 0;
+                    if (this.payment_status === 'signal') return Math.round(this.totalOrder() * 50) / 100;
+                    if (this.payment_status === 'paid') return this.totalOrder();
+                    if (this.payment_status === 'other') return parseFloat(this.paid_amount) || 0;
+                    return 0;
+                },
+
+                remainingAmount() {
+                    return Math.max(0, this.totalOrder() - this.calculatedPaidAmount());
+                },
 
                 addItem() {
                     this.items.push({ product_id: '', quantity: 1, unit_price: 0 });

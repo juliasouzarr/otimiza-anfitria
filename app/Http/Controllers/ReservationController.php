@@ -42,6 +42,9 @@ class ReservationController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'notes' => 'nullable|string',
+            'payment_status' => 'nullable|in:pending,signal,paid,other',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -64,15 +67,6 @@ class ReservationController extends Controller
         }
 
         DB::transaction(function () use ($request) {
-            $reservation = Reservation::create([
-                'identifier' => $request->identifier,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'notes' => $request->notes,
-                'status' => 'active',
-                'total_price' => 0,
-            ]);
-
             $totalPrice = 0;
             foreach ($request->items as $item) {
                 $product = Product::find($item['product_id']);
@@ -81,6 +75,43 @@ class ReservationController extends Controller
                     : ($product ? (float)$product->price : 0);
 
                 $totalPrice += ($unitPrice * (int)$item['quantity']);
+            }
+
+            $paymentStatus = $request->input('payment_status', 'pending');
+            $paidAmount = 0.00;
+            if ($paymentStatus === 'signal') {
+                $paidAmount = round($totalPrice * 0.5, 2);
+            } elseif ($paymentStatus === 'paid') {
+                $paidAmount = $totalPrice;
+            } elseif ($paymentStatus === 'other') {
+                $paidAmount = (float)$request->input('paid_amount', 0);
+            }
+
+            $paymentDate = ($paymentStatus !== 'pending' && $request->filled('payment_date'))
+                ? $request->payment_date
+                : null;
+
+            if ($paymentStatus === 'pending') {
+                $paidAmount = 0.00;
+            }
+
+            $reservation = Reservation::create([
+                'identifier' => $request->identifier,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'notes' => $request->notes,
+                'status' => 'active',
+                'total_price' => $totalPrice,
+                'payment_status' => $paymentStatus,
+                'paid_amount' => $paidAmount,
+                'payment_date' => $paymentDate,
+            ]);
+
+            foreach ($request->items as $item) {
+                $product = Product::find($item['product_id']);
+                $unitPrice = isset($item['unit_price']) && is_numeric($item['unit_price'])
+                    ? (float)$item['unit_price']
+                    : ($product ? (float)$product->price : 0);
 
                 ReservationItem::create([
                     'reservation_id' => $reservation->id,
@@ -89,8 +120,6 @@ class ReservationController extends Controller
                     'unit_price' => $unitPrice,
                 ]);
             }
-
-            $reservation->update(['total_price' => $totalPrice]);
         });
 
         return redirect()->route('reservations.index')->with('success', 'Reserva criada com sucesso!');
@@ -124,6 +153,9 @@ class ReservationController extends Controller
             'end_date' => 'required|date|after:start_date',
             'notes' => 'nullable|string',
             'status' => 'required|in:active,cancelled,completed',
+            'payment_status' => 'nullable|in:pending,signal,paid,other',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -159,6 +191,24 @@ class ReservationController extends Controller
                 $totalPrice += ($unitPrice * (int)$item['quantity']);
             }
 
+            $paymentStatus = $request->input('payment_status', 'pending');
+            $paidAmount = 0.00;
+            if ($paymentStatus === 'signal') {
+                $paidAmount = round($totalPrice * 0.5, 2);
+            } elseif ($paymentStatus === 'paid') {
+                $paidAmount = $totalPrice;
+            } elseif ($paymentStatus === 'other') {
+                $paidAmount = (float)$request->input('paid_amount', 0);
+            }
+
+            $paymentDate = ($paymentStatus !== 'pending' && $request->filled('payment_date'))
+                ? $request->payment_date
+                : null;
+
+            if ($paymentStatus === 'pending') {
+                $paidAmount = 0.00;
+            }
+
             $reservation->update([
                 'identifier' => $request->identifier,
                 'start_date' => $request->start_date,
@@ -166,6 +216,9 @@ class ReservationController extends Controller
                 'notes' => $request->notes,
                 'status' => $request->status,
                 'total_price' => $totalPrice,
+                'payment_status' => $paymentStatus,
+                'paid_amount' => $paidAmount,
+                'payment_date' => $paymentDate,
             ]);
 
             $reservation->items()->delete();
@@ -186,6 +239,46 @@ class ReservationController extends Controller
         });
 
         return redirect()->route('reservations.index')->with('success', 'Reserva atualizada com sucesso!');
+    }
+
+    /**
+     * Atualização rápida apenas do status de pagamento, valor e data.
+     */
+    public function updatePayment(Request $request, Reservation $reservation)
+    {
+        $request->validate([
+            'payment_status' => 'required|in:pending,signal,paid,other',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
+        ]);
+
+        $paymentStatus = $request->payment_status;
+        $totalPrice = (float)($reservation->total_price ?? 0);
+        $paidAmount = 0.00;
+
+        if ($paymentStatus === 'signal') {
+            $paidAmount = round($totalPrice * 0.5, 2);
+        } elseif ($paymentStatus === 'paid') {
+            $paidAmount = $totalPrice;
+        } elseif ($paymentStatus === 'other') {
+            $paidAmount = (float)($request->paid_amount ?? 0);
+        }
+
+        $paymentDate = ($paymentStatus !== 'pending' && $request->filled('payment_date'))
+            ? $request->payment_date
+            : null;
+
+        if ($paymentStatus === 'pending') {
+            $paidAmount = 0.00;
+        }
+
+        $reservation->update([
+            'payment_status' => $paymentStatus,
+            'paid_amount' => $paidAmount,
+            'payment_date' => $paymentDate,
+        ]);
+
+        return back()->with('success', "Pagamento da reserva #{$reservation->id} atualizado com sucesso!");
     }
 
     public function destroy(Reservation $reservation)

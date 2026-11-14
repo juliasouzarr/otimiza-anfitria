@@ -265,6 +265,38 @@
             border: 1px solid #fecaca;
         }
 
+        .payment-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .pay-paid {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .pay-signal {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .pay-other {
+            background: #e0e7ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+        }
+
+        .pay-pending {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
         /* Tabela de Enxovais */
         .section-title {
             font-size: 12px;
@@ -592,6 +624,27 @@
                         </span>
                     </div>
                     <div class="info-row">
+                        <span class="info-label">Pagamento:</span>
+                        <span class="info-value">
+                            @php $payStatus = $reservation->payment_status ?? 'pending'; @endphp
+                            @if($payStatus == 'paid')
+                                <span class="payment-badge pay-paid">Totalmente Pago</span>
+                            @elseif($payStatus == 'signal')
+                                <span class="payment-badge pay-signal">Sinal Pago (50%)</span>
+                            @elseif($payStatus == 'other')
+                                <span class="payment-badge pay-other">Outro Valor</span>
+                            @else
+                                <span class="payment-badge pay-pending">Pendente</span>
+                            @endif
+                        </span>
+                    </div>
+                    @if($reservation->payment_date && ($reservation->payment_status ?? 'pending') !== 'pending')
+                    <div class="info-row">
+                        <span class="info-label">Data do Pagto:</span>
+                        <span class="info-value">{{ \Carbon\Carbon::parse($reservation->payment_date)->format('d/m/Y') }}</span>
+                    </div>
+                    @endif
+                    <div class="info-row">
                         <span class="info-label">Cód. Interno:</span>
                         <span class="info-value">#{{ $reservation->id }}</span>
                     </div>
@@ -684,6 +737,16 @@
                     <div class="totals-row">
                         <span class="info-label">Subtotal Geral:</span>
                         <span class="info-value">R$ {{ number_format($reservation->total_price ?? 0, 2, ',', '.') }}</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="info-label">Valor Pago:</span>
+                        <span class="info-value" style="color: #15803d; font-weight: 700;">R$ {{ number_format($reservation->paid_amount ?? 0, 2, ',', '.') }}</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="info-label">Saldo Restante:</span>
+                        <span class="info-value" style="color: {{ ($reservation->payment_remaining ?? 0) > 0 ? '#b45309' : '#64748b' }}; font-weight: 700;">
+                            R$ {{ number_format($reservation->payment_remaining ?? 0, 2, ',', '.') }}
+                        </span>
                     </div>
                     <div class="totals-row grand-total">
                         <span class="grand-total-label">Valor Final:</span>
